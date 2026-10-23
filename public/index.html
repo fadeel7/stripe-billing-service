@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Subscribe</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        display: grid; place-items: center; min-height: 100vh; margin: 0;
+        background: #0b0d12; color: #e7e9ee;
+      }
+      .card {
+        background: #151922; border: 1px solid #262b36; border-radius: 16px;
+        padding: 2.5rem; width: min(90vw, 380px); text-align: center;
+      }
+      h1 { margin: 0 0 .25rem; font-size: 1.5rem; }
+      .price { font-size: 2.75rem; font-weight: 700; margin: 1rem 0 .25rem; }
+      .price span { font-size: 1rem; font-weight: 400; color: #8b93a7; }
+      ul { text-align: left; color: #c3c9d6; line-height: 1.9; padding-left: 1.2rem; }
+      button {
+        width: 100%; padding: .85rem; border: 0; border-radius: 10px;
+        background: #635bff; color: #fff; font-size: 1rem; font-weight: 600;
+        cursor: pointer; margin-top: 1rem;
+      }
+      button:hover { background: #5249e0; }
+      .note { color: #6b7280; font-size: .8rem; margin-top: 1.25rem; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Pro Plan</h1>
+      <p style="color:#8b93a7;margin:0">Everything you need to go further.</p>
+      <div class="price">$12<span>/mo</span></div>
+      <ul>
+        <li>Unlimited projects</li>
+        <li>Priority support</li>
+        <li>Advanced analytics</li>
+      </ul>
+      <button id="checkout">Subscribe</button>
+      <p class="note">Test mode — use card 4242 4242 4242 4242</p>
+    </div>
+
+    <script>
+      document.getElementById("checkout").addEventListener("click", async () => {
+        const res = await fetch("/create-checkout-session", { method: "POST" });
+        const { url } = await res.json();
+        window.location = url; // redirect to Stripe's hosted Checkout page
+      });
+    </script>
+  </body>
+</html>
