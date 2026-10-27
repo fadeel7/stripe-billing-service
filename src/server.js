@@ -38,11 +38,14 @@ app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Idempotency guard: if we've already handled this event id, ack and bail.
-  if (db.hasProcessed(event.id)) {
-    return res.json({ received: true, duplicate: true });
-  }
+  // Idempotency: claim the event id and apply its changes in one transaction.
+  // The UNIQUE constraint on processed_events.event_id decides who wins, so a
+  // duplicate delivery — even one racing this one — runs none of the code below.
+  const isNew = db.processEventOnce(event.id, () => applyEvent(event));
+  res.json(isNew ? { received: true } : { received: true, duplicate: true });
+});
 
+function applyEvent(event) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object;
@@ -76,10 +79,7 @@ app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
       // Unhandled event types are normal — Stripe sends many. Just ack them.
       break;
   }
-
-  db.markProcessed(event.id);
-  res.json({ received: true });
-});
+}
 
 // Every other route can use normal JSON parsing.
 app.use(express.json());

@@ -11,7 +11,7 @@ A subscription billing service built on Stripe Checkout and webhooks. Users pay 
 
 1. **Never trust the browser.** Reaching `success.html` proves nothing, because a redirect can be skipped, refreshed or typed by hand. Access is granted only from the webhook.
 2. **Verify every webhook signature.** Each event is checked against the signing secret before anything happens. The `/webhook` route reads the raw body, since Stripe signs the exact bytes. If a JSON parser runs first, verification fails silently.
-3. **Process each event once.** Stripe may deliver the same event more than once. Each handled event id is recorded, and repeats are acknowledged and skipped.
+3. **Process each event once.** Stripe may deliver the same event more than once. A `UNIQUE` constraint on `processed_events.event_id` enforces this, not application code. The webhook claims the event id with `INSERT … ON CONFLICT DO NOTHING` and applies the change in the same transaction. Only the delivery that inserted the row runs the handler, even if duplicates arrive at the same time. If the handler fails, the claim rolls back with it, so Stripe's retry is still processed.
 
 | Subscribe | Success |
 |---|---|
@@ -38,8 +38,8 @@ sequenceDiagram
     alt Invalid signature
         S-->>St: 400, event ignored
     else Valid
-        S->>S: Idempotency check (event.id seen?)
-        alt Already processed
+        S->>S: INSERT event_id ON CONFLICT DO NOTHING
+        alt No row inserted (duplicate)
             S-->>St: 200 { duplicate: true }
         else New event
             S->>S: Grant access (subscriptionStatus = active)
@@ -89,6 +89,8 @@ stripe listen --forward-to localhost:4242/webhook
 npm run dev
 ```
 
+Run the tests with `npm test`. They check that a duplicate event, including duplicates sent to two servers at once, changes the customer only once.
+
 Open `http://localhost:4242`, click **Subscribe**, and pay with `4242 4242 4242 4242` (any future expiry, any CVC). The server logs each webhook as the subscription activates.
 
 ## Endpoints
@@ -103,11 +105,13 @@ Handled events: `checkout.session.completed`, `customer.subscription.updated`, `
 
 ## Stack and limits
 
-Node, Express, the Stripe API, and plain HTML/CSS. State is kept in memory ([`src/db.js`](src/db.js)) behind an interface shaped like a database layer. A restart clears all subscribers **and** the list of processed event ids, so this is a demo, not production storage.
+Node, Express, the Stripe API, SQLite (via [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)), and plain HTML/CSS. Data lives in `./data/billing.db` (gitignored), with two tables: `customers` and `processed_events`. [`src/db.js`](src/db.js) is the only file that touches SQL. Set `BILLING_DB_PATH` to use a different file.
+
+SQLite suits one machine. Several processes can share the file, and the claim still holds across them, but this isn't built for multiple hosts.
 
 ## What I'd add next
 
-- PostgreSQL behind the existing `db` interface.
+- PostgreSQL behind the existing `db` interface, for running on more than one host. The same `UNIQUE` + `ON CONFLICT DO NOTHING` pattern carries over.
 - A customer portal link (`stripe.billingPortal.sessions.create`) so users can manage or cancel their plan.
 - Auth, so a subscription belongs to a logged-in user rather than only a Stripe customer id.
 
