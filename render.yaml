@@ -1,0 +1,22 @@
+# Render Blueprint: one free web service, Stripe test mode.
+# Secrets are declared with `sync: false`, so Render asks for them in the
+# Dashboard when the Blueprint is created. They never live in this repo.
+services:
+  - type: web
+    name: stripe-subscriptions
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: STRIPE_SECRET_KEY # sk_test_... (live keys are refused at startup)
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET # whsec_... from the Dashboard webhook endpoint
+        sync: false
+      - key: STRIPE_PRICE_ID # price_... of a test-mode recurring price
+        sync: false
+      - key: CLIENT_URL # optional; defaults to RENDER_EXTERNAL_URL
+        sync: false

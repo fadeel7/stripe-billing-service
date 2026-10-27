@@ -71,6 +71,22 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .skip:focus { top: 0.75rem; }
 
+/* ---------- Test-mode banner (subscribe page) ---------- */
+
+.test-banner {
+  margin: 0;
+  padding: 0.55rem var(--gutter);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.85rem;
+  text-align: center;
+}
+.test-banner code {
+  font: 500 1.05em ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  word-spacing: -0.2em;
+  white-space: nowrap;
+}
+
 /* ---------- Masthead ---------- */
 
 .masthead {
