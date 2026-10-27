@@ -4,6 +4,9 @@
   "description": "A full-stack subscription billing service built on Stripe Checkout and webhooks.",
   "type": "module",
   "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",

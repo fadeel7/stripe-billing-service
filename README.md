@@ -1,6 +1,6 @@
 # Stripe Subscriptions
 
-[![Node 18.11+](https://img.shields.io/badge/node-18.11%2B-3c873a?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Node 20+](https://img.shields.io/badge/node-20%2B-3c873a?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![stripe-node 16](https://img.shields.io/badge/stripe--node-16-635bff?logo=stripe&logoColor=white)](https://github.com/stripe/stripe-node)
 [![License: MIT](https://img.shields.io/badge/license-MIT-555)](LICENSE)
 [![Status: Stripe test mode](https://img.shields.io/badge/status-Stripe%20test%20mode-c2410c)](#running-locally)
@@ -92,6 +92,24 @@ npm run dev
 Run the tests with `npm test`. They check that a duplicate event, including duplicates sent to two servers at once, changes the customer only once.
 
 Open `http://localhost:4242`, click **Subscribe**, and pay with `4242 4242 4242 4242` (any future expiry, any CVC). The server logs each webhook as the subscription activates.
+
+## Deploying to Render (free tier, test mode)
+
+[`render.yaml`](render.yaml) defines one free web service. In the Render Dashboard choose **New → Blueprint**, select this repo, and enter the secrets when prompted. They stay in Render and never go in the repo.
+
+| Variable | Value |
+|---|---|
+| `STRIPE_SECRET_KEY` | Your **test** secret key (`sk_test_…`). A live key makes the server exit at startup. |
+| `STRIPE_PRICE_ID` | A test-mode recurring price |
+| `STRIPE_WEBHOOK_SECRET` | See below |
+| `CLIENT_URL` | Optional. Defaults to Render's `RENDER_EXTERNAL_URL` (`https://<service>.onrender.com`). |
+
+Render sets `PORT` itself. After the first deploy, in Stripe (test mode) go to **Developers → Webhooks → Add endpoint**. Use `https://<service>.onrender.com/webhook` and select `checkout.session.completed`, `customer.subscription.updated` and `customer.subscription.deleted`. Then copy the endpoint's signing secret into `STRIPE_WEBHOOK_SECRET` and redeploy.
+
+Free-tier limits to know about:
+
+- **No persistent disk.** `data/billing.db` is wiped on every deploy and restart, along with the processed-event ids. That's fine for a demo, but not for real records.
+- **The service sleeps after about 15 minutes idle.** The first request, or webhook, after that waits for a cold start. Stripe retries webhooks that time out, and the idempotency check absorbs the retries.
 
 ## Endpoints
 

@@ -12,10 +12,18 @@ if (!STRIPE_SECRET_KEY) {
   process.exit(1);
 }
 
+// This deployment is a test-mode demo; refuse to run against real money.
+if (STRIPE_SECRET_KEY.startsWith("sk_live_")) {
+  console.error("STRIPE_SECRET_KEY is a live key. This service is meant to run in Stripe test mode only.");
+  process.exit(1);
+}
+
 const stripe = new Stripe(STRIPE_SECRET_KEY);
 const app = express();
 const PORT = process.env.PORT || 4242;
-const clientUrl = CLIENT_URL || `http://localhost:${PORT}`;
+// Public base URL for Stripe's success/cancel redirects. Set CLIENT_URL explicitly;
+// on Render, RENDER_EXTERNAL_URL (e.g. https://<service>.onrender.com) is the fallback.
+const clientUrl = (CLIENT_URL || process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`).replace(/\/$/, "");
 
 /*
  * IMPORTANT: the webhook route must receive the RAW request body, because
