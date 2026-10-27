@@ -2,7 +2,7 @@
 
 [![Node 18.11+](https://img.shields.io/badge/node-18.11%2B-3c873a?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![stripe-node 16](https://img.shields.io/badge/stripe--node-16-635bff?logo=stripe&logoColor=white)](https://github.com/stripe/stripe-node)
-[![License: MIT](https://img.shields.io/badge/license-MIT-555)](package.json)
+[![License: MIT](https://img.shields.io/badge/license-MIT-555)](LICENSE)
 [![Status: Stripe test mode](https://img.shields.io/badge/status-Stripe%20test%20mode-c2410c)](#running-locally)
 
 A subscription billing service built on Stripe Checkout and webhooks. Users pay on Stripe's hosted checkout page, and the server marks them as subscribed only when Stripe sends a signed webhook confirming the payment.
@@ -117,4 +117,4 @@ SQLite suits one machine. Several processes can share the file, and the claim st
 
 ---
 
-MIT
+[MIT](LICENSE)
