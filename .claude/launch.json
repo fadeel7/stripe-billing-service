@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev-dummy",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "env": {
+        "STRIPE_SECRET_KEY": "sk_test_dummy",
+        "STRIPE_WEBHOOK_SECRET": "whsec_dummy",
+        "STRIPE_PRICE_ID": "price_dummy",
+        "PORT": "4343",
+        "CLIENT_URL": "http://localhost:4343"
+      },
+      "port": 4343
+    }
+  ]
+}

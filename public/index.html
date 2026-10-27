@@ -3,50 +3,108 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Subscribe</title>
-    <style>
-      :root { color-scheme: light dark; }
-      body {
-        font-family: system-ui, -apple-system, sans-serif;
-        display: grid; place-items: center; min-height: 100vh; margin: 0;
-        background: #0b0d12; color: #e7e9ee;
-      }
-      .card {
-        background: #151922; border: 1px solid #262b36; border-radius: 16px;
-        padding: 2.5rem; width: min(90vw, 380px); text-align: center;
-      }
-      h1 { margin: 0 0 .25rem; font-size: 1.5rem; }
-      .price { font-size: 2.75rem; font-weight: 700; margin: 1rem 0 .25rem; }
-      .price span { font-size: 1rem; font-weight: 400; color: #8b93a7; }
-      ul { text-align: left; color: #c3c9d6; line-height: 1.9; padding-left: 1.2rem; }
-      button {
-        width: 100%; padding: .85rem; border: 0; border-radius: 10px;
-        background: #635bff; color: #fff; font-size: 1rem; font-weight: 600;
-        cursor: pointer; margin-top: 1rem;
-      }
-      button:hover { background: #5249e0; }
-      .note { color: #6b7280; font-size: .8rem; margin-top: 1.25rem; }
-    </style>
+    <meta name="color-scheme" content="light dark" />
+    <title>Subscribe to Almanac</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&family=Instrument+Sans:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/almanac.css" />
   </head>
   <body>
-    <div class="card">
-      <h1>Pro Plan</h1>
-      <p style="color:#8b93a7;margin:0">Everything you need to go further.</p>
-      <div class="price">$12<span>/mo</span></div>
-      <ul>
-        <li>Unlimited projects</li>
-        <li>Priority support</li>
-        <li>Advanced analytics</li>
-      </ul>
-      <button id="checkout">Subscribe</button>
-      <p class="note">Test mode — use card 4242 4242 4242 4242</p>
-    </div>
+    <a class="skip" href="#order">Skip to checkout</a>
 
+    <header class="masthead">
+      <a class="wordmark" href="/" aria-label="Almanac home">
+        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="10" cy="10" r="8.25" />
+          <path d="M1.75 12.5h16.5" />
+        </svg>
+        Almanac
+      </a>
+      <span class="masthead-note">Checkout</span>
+    </header>
+
+    <main>
+      <section class="lede" aria-labelledby="headline">
+        <h1 id="headline" class="reveal">A year, kept on <em>one page.</em></h1>
+        <p class="reveal" style="--i: 1">
+          Almanac is a quiet planner for people who think in seasons, not sprints.
+          Write the year out once, glance at it each morning, and let the rest go.
+        </p>
+
+        <figure class="year reveal" style="--i: 2">
+          <ol data-year-strip aria-label="Months of the year"></ol>
+          <figcaption>
+            It’s <span data-month-name>October</span>. There’s still most of a season left in
+            <span data-year-number>2026</span>.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="order" class="panel" aria-labelledby="plan-name">
+        <h2 id="plan-name">Almanac, monthly</h2>
+
+        <div class="plan-price">
+          <span class="amount">$12</span>
+          <span class="per">a month</span>
+        </div>
+        <p class="plan-blurb">One plan. Everything Almanac does.</p>
+
+        <ul class="includes">
+          <li>Unlimited yearbooks, one for every part of your life</li>
+          <li>Shared calendars with the people you plan with</li>
+          <li>Printable spreads, sized for A5 and Letter</li>
+        </ul>
+
+        <dl class="ledger">
+          <div><dt>Billed</dt><dd>Monthly, from today</dd></div>
+          <div><dt>Tax</dt><dd>Calculated at checkout</dd></div>
+          <div class="total"><dt>Due today</dt><dd>$12.00</dd></div>
+        </dl>
+
+        <button id="checkout" class="subscribe" type="button">
+          <span>Subscribe<span class="arrow" aria-hidden="true">→</span></span>
+          <span class="price-tag">$12 / mo</span>
+        </button>
+        <p id="checkout-error" class="error" role="alert"></p>
+
+        <p class="fine">You’ll finish on Stripe’s secure checkout. Cancel any time.</p>
+        <p class="fine">Test mode — card <code>4242 4242 4242 4242</code>, any future date, any CVC.</p>
+      </section>
+    </main>
+
+    <footer class="colophon">
+      <span>Almanac</span>
+      <span>Payments processed by Stripe</span>
+    </footer>
+
+    <script src="/almanac.js"></script>
     <script>
-      document.getElementById("checkout").addEventListener("click", async () => {
-        const res = await fetch("/create-checkout-session", { method: "POST" });
-        const { url } = await res.json();
-        window.location = url; // redirect to Stripe's hosted Checkout page
+      const button = document.getElementById("checkout");
+      const errorEl = document.getElementById("checkout-error");
+      const label = button.firstElementChild;
+      const idleLabel = label.innerHTML;
+
+      button.addEventListener("click", async () => {
+        button.setAttribute("aria-busy", "true");
+        button.disabled = true;
+        errorEl.textContent = "";
+        label.innerHTML = 'Opening checkout<span class="arrow" aria-hidden="true">→</span>';
+
+        try {
+          const res = await fetch("/create-checkout-session", { method: "POST" });
+          const { url } = await res.json();
+          if (!url) throw new Error("no url");
+          window.location = url; // redirect to Stripe's hosted Checkout page
+        } catch {
+          button.removeAttribute("aria-busy");
+          button.disabled = false;
+          label.innerHTML = idleLabel;
+          errorEl.textContent = "We couldn’t reach checkout just now. Nothing was charged — please try again.";
+        }
       });
     </script>
   </body>

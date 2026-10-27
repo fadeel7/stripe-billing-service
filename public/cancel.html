@@ -3,22 +3,61 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Checkout canceled</title>
-    <style>
-      :root { color-scheme: light dark; }
-      body {
-        font-family: system-ui, sans-serif; display: grid; place-items: center;
-        min-height: 100vh; margin: 0; background: #0b0d12; color: #e7e9ee; text-align: center;
-      }
-      .card { background: #151922; border: 1px solid #262b36; border-radius: 16px; padding: 2.5rem; width: min(90vw, 380px); }
-      a { color: #635bff; }
-    </style>
+    <meta name="color-scheme" content="light dark" />
+    <title>Checkout canceled — Almanac</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&family=Instrument+Sans:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/almanac.css" />
   </head>
   <body>
-    <div class="card">
-      <h1>Checkout canceled</h1>
-      <p style="color:#8b93a7">No charge was made. You can subscribe whenever you're ready.</p>
-      <a href="/">Back home</a>
-    </div>
+    <header class="masthead">
+      <a class="wordmark" href="/" aria-label="Almanac home">
+        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="10" cy="10" r="8.25" />
+          <path d="M1.75 12.5h16.5" />
+        </svg>
+        Almanac
+      </a>
+      <span class="masthead-note">Checkout canceled</span>
+    </header>
+
+    <main>
+      <section class="lede" aria-labelledby="headline">
+        <h1 id="headline" class="reveal">No charge. <em>Nothing changed.</em></h1>
+        <p class="reveal" style="--i: 1">
+          You left checkout before paying, so your card wasn’t charged and no subscription
+          was created. Your place is still here whenever you want it.
+        </p>
+
+        <figure class="year open reveal" style="--i: 2">
+          <ol data-year-strip aria-label="Months of the year"></ol>
+          <figcaption><span data-month-name>October</span> is still open.</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel" aria-labelledby="where">
+        <h2 id="where">Where things stand</h2>
+
+        <dl class="ledger">
+          <div><dt>Charged</dt><dd>$0.00</dd></div>
+          <div><dt>Subscription</dt><dd>None</dd></div>
+          <div><dt>Plan on offer</dt><dd>Almanac, $12 a month</dd></div>
+        </dl>
+
+        <a class="link-action" href="/">Return to the plan <span class="arrow" aria-hidden="true">→</span></a>
+        <p class="fine">Something go wrong at checkout? Write to <a href="mailto:help@almanac.example">help@almanac.example</a>.</p>
+      </section>
+    </main>
+
+    <footer class="colophon">
+      <span>Almanac</span>
+      <span>Payments processed by Stripe</span>
+    </footer>
+
+    <script src="/almanac.js"></script>
   </body>
 </html>
