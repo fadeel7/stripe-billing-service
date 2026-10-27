@@ -3,24 +3,75 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>You're subscribed</title>
-    <style>
-      :root { color-scheme: light dark; }
-      body {
-        font-family: system-ui, sans-serif; display: grid; place-items: center;
-        min-height: 100vh; margin: 0; background: #0b0d12; color: #e7e9ee; text-align: center;
-      }
-      .card { background: #151922; border: 1px solid #262b36; border-radius: 16px; padding: 2.5rem; width: min(90vw, 380px); }
-      .check { font-size: 3rem; }
-      a { color: #635bff; }
-    </style>
+    <meta name="color-scheme" content="light dark" />
+    <title>Welcome to Almanac</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&family=Instrument+Sans:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/almanac.css" />
   </head>
   <body>
-    <div class="card">
-      <div class="check">✓</div>
-      <h1>You're subscribed</h1>
-      <p style="color:#8b93a7">Your Pro plan is active. A webhook just confirmed it on the server.</p>
-      <a href="/">Back home</a>
-    </div>
+    <header class="masthead">
+      <a class="wordmark" href="/" aria-label="Almanac home">
+        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="10" cy="10" r="8.25" />
+          <path d="M1.75 12.5h16.5" />
+        </svg>
+        Almanac
+      </a>
+      <span class="masthead-note">Subscription active</span>
+    </header>
+
+    <main>
+      <section class="lede" aria-labelledby="headline">
+        <h1 id="headline" class="reveal">The year is <em>yours.</em></h1>
+        <p class="reveal" style="--i: 1">
+          Your Almanac subscription is active. Stripe has taken the first payment,
+          and the next one comes round a month from today.
+        </p>
+
+        <figure class="year reveal" style="--i: 2">
+          <ol data-year-strip aria-label="Months of the year"></ol>
+          <figcaption>Start with <span data-month-name>October</span>. The rest of the page can wait.</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel" aria-labelledby="next">
+        <h2 id="next">What happens next</h2>
+
+        <ol class="steps">
+          <li><div><strong>Check your inbox</strong><span>Stripe sends the receipt to the email you used at checkout.</span></div></li>
+          <li><div><strong>Open your first yearbook</strong><span>Twelve months, one page. Fill in what you already know.</span></div></li>
+          <li><div><strong>Change your mind any time</strong><span>Cancel from settings; you keep access until the month ends.</span></div></li>
+        </ol>
+
+        <dl class="ledger">
+          <div><dt>Plan</dt><dd>Almanac, monthly</dd></div>
+          <div><dt>Paid today</dt><dd>$12.00</dd></div>
+          <div id="ref-row" hidden><dt>Reference</dt><dd class="mono" id="ref"></dd></div>
+        </dl>
+
+        <a class="link-action" href="/">Back to Almanac <span class="arrow" aria-hidden="true">→</span></a>
+      </section>
+    </main>
+
+    <footer class="colophon">
+      <span>Almanac</span>
+      <span>Payments processed by Stripe</span>
+    </footer>
+
+    <script src="/almanac.js"></script>
+    <script>
+      // Show a short form of the Checkout Session id so the page reads like a receipt.
+      const id = new URLSearchParams(location.search).get("session_id");
+      if (id) {
+        document.getElementById("ref").textContent = id.length > 18 ? `${id.slice(0, 8)}…${id.slice(-6)}` : id;
+        document.getElementById("ref").title = id;
+        document.getElementById("ref-row").hidden = false;
+      }
+    </script>
   </body>
 </html>

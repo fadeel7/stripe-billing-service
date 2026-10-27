@@ -1,0 +1,395 @@
+/*
+ * Almanac — shared styles for the checkout, success and cancel pages.
+ * Paper and ink, one red. The red is reserved for the subscribe button
+ * and the current-month mark on the year strip; nothing else gets it.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --paper: #f3efe6;
+  --paper-deep: #ebe5d8;
+  --ink: #1c1a16;
+  --ink-soft: #57524a;
+  --ink-faint: #8a8478;
+  --rule: #d3cbbb;
+  --red: #b8361e;
+  --red-press: #9a2b16;
+  --on-red: #fff8f2;
+
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #16140f;
+    --paper-deep: #1e1b15;
+    --ink: #ede7da;
+    --ink-soft: #b3ab9c;
+    --ink-faint: #81796b;
+    --rule: #3a352c;
+    --red: #e0573a;
+    --red-press: #c9472c;
+    --on-red: #1a0b06;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1rem/1.55 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.skip {
+  position: absolute; left: var(--gutter); top: -3rem;
+  background: var(--ink); color: var(--paper);
+  padding: 0.5rem 0.75rem; text-decoration: none; z-index: 10;
+}
+.skip:focus { top: 0.75rem; }
+
+/* ---------- Masthead ---------- */
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font: 500 1.35rem/1 var(--serif);
+  font-variation-settings: "opsz" 48;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+.wordmark svg { width: 1.15rem; height: 1.15rem; flex: none; transform: translateY(0.05em); }
+
+.masthead-note {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- Page grid ---------- */
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 7vw, 6rem) var(--gutter) clamp(3rem, 6vw, 5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  column-gap: clamp(2rem, 7vw, 7rem);
+  row-gap: 3rem;
+  align-items: start;
+}
+
+@media (max-width: 52rem) {
+  main { grid-template-columns: minmax(0, 1fr); padding-top: 2rem; row-gap: 2.5rem; }
+  .lede p { font-size: 1rem; margin-top: 1.25rem; }
+  .year { margin-top: 1.75rem; }
+  .year li::before { height: 1.5rem; }
+  .includes { margin-top: 1.25rem; }
+  .includes li { padding: 0.2rem 0; }
+}
+
+/* ---------- Editorial column ---------- */
+
+.lede h1 {
+  margin: 0;
+  font: 330 clamp(2.6rem, 6.4vw, 5.25rem)/0.98 var(--serif);
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+  letter-spacing: -0.025em;
+  max-width: 11ch;
+  text-wrap: balance;
+}
+.lede h1 em { font-style: italic; font-weight: 300; }
+
+.lede p {
+  margin: 1.75rem 0 0;
+  max-width: 34rem;
+  font-size: 1.125rem;
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+/* The year strip: twelve months, the current one marked in red. */
+.year {
+  margin: clamp(2.5rem, 6vw, 4rem) 0 0;
+  max-width: 34rem;
+}
+.year ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 3px;
+}
+.year li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.year li::before {
+  content: "";
+  display: block;
+  height: 2.25rem;
+  border-top: 1px solid var(--ink);
+  background: var(--paper-deep);
+  transform-origin: bottom;
+}
+.year li.past::before { background: var(--rule); }
+.year li.now::before { background: var(--red); border-top-color: var(--red); }
+.year li.now { color: var(--ink); font-weight: 600; }
+/* Cancel page: the month is left open rather than claimed. */
+.year.open li.now::before {
+  background: transparent;
+  border: 1px dashed var(--ink-soft);
+}
+.year figcaption {
+  margin-top: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- Order / detail column ---------- */
+
+.panel {
+  border-top: 2px solid var(--ink);
+  padding-top: 1.25rem;
+}
+
+.panel h2 {
+  margin: 0;
+  font: 450 1.5rem/1.2 var(--serif);
+  font-variation-settings: "opsz" 36;
+  letter-spacing: -0.01em;
+}
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 1.5rem 0 0.25rem;
+}
+.plan-price .amount {
+  font: 350 4rem/0.9 var(--serif);
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums;
+}
+.plan-price .per { color: var(--ink-soft); }
+
+.plan-blurb { margin: 0.5rem 0 0; color: var(--ink-soft); }
+
+.includes {
+  list-style: none;
+  margin: 1.75rem 0 0;
+  padding: 0;
+}
+.includes li {
+  display: grid;
+  grid-template-columns: 1.25rem 1fr;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+}
+.includes li::before {
+  content: "—";
+  color: var(--ink-faint);
+}
+
+.ledger {
+  margin: 1.75rem 0 0;
+  border-top: 1px solid var(--rule);
+}
+.ledger div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-variant-numeric: tabular-nums;
+}
+.ledger dt { color: var(--ink-soft); }
+.ledger dd { margin: 0; text-align: right; }
+.ledger .total dt, .ledger .total dd { color: var(--ink); font-weight: 600; }
+.ledger .mono { font: 0.85rem/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; word-break: break-all; }
+
+/* ---------- The one hero moment ---------- */
+
+.subscribe {
+  --lift: 0px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 2rem;
+  padding: 1.35rem 1.5rem;
+  border: 0;
+  border-radius: 3px;
+  background: var(--red);
+  color: var(--on-red);
+  font: 500 1.3rem/1.1 var(--serif);
+  font-variation-settings: "opsz" 36;
+  letter-spacing: -0.005em;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 var(--lift) 0 0 var(--ink);
+  transform: translateY(calc(var(--lift) * -1));
+  transition: transform 180ms var(--ease), box-shadow 180ms var(--ease), background-color 180ms var(--ease);
+}
+.subscribe .price-tag {
+  font: 500 0.95rem/1 var(--sans);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+.subscribe .arrow {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-family: var(--sans);
+  transition: transform 180ms var(--ease);
+}
+.subscribe:hover { --lift: 4px; }
+.subscribe:hover .arrow { transform: translateX(4px); }
+.subscribe:active { --lift: 1px; background: var(--red-press); }
+.subscribe:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+.subscribe[aria-busy="true"] { cursor: progress; --lift: 0px; }
+.subscribe[aria-busy="true"] .arrow { animation: nudge 900ms var(--ease) infinite; }
+
+@keyframes nudge {
+  50% { transform: translateX(6px); }
+}
+
+.fine {
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.fine + .fine { margin-top: 0.35rem; color: var(--ink-faint); }
+.fine code { font: 0.8rem ui-monospace, "SF Mono", Menlo, Consolas, monospace; word-spacing: -0.25em; white-space: nowrap; }
+
+.error {
+  margin: 1rem 0 0;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--ink);
+  font-size: 0.9rem;
+}
+.error:empty { display: none; }
+
+/* ---------- Secondary actions (success / cancel) ---------- */
+
+.steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 1.5rem 0 0;
+  padding: 0;
+}
+.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.steps li:first-child { border-top: 1px solid var(--rule); }
+.steps li::before {
+  content: counter(step);
+  font: 400 1.35rem/1.1 var(--serif);
+  font-variation-settings: "opsz" 36;
+  color: var(--ink-faint);
+}
+.steps strong { display: block; font-weight: 600; }
+.steps span { color: var(--ink-soft); }
+
+.link-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 0.85rem 1.25rem;
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+.link-action:hover { background: var(--ink); color: var(--paper); }
+.link-action .arrow { transition: transform 160ms var(--ease); }
+.link-action:hover .arrow { transform: translateX(3px); }
+
+/* ---------- Footer ---------- */
+
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding: 1.25rem var(--gutter);
+  border-top: 1px solid var(--rule);
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+}
+
+/* ---------- Motion: a single settle-in on load ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    animation: rise 700ms var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  .year li::before {
+    animation: grow 600ms var(--ease) both;
+    animation-delay: calc(300ms + var(--m, 0) * 35ms);
+  }
+  .panel { animation: rule-in 700ms var(--ease) both; animation-delay: 120ms; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+}
+@keyframes grow {
+  from { transform: scaleY(0); }
+}
+@keyframes rule-in {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation: none !important; }
+}
